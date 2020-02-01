@@ -50,7 +50,7 @@ app.get('/api/notes', function (req, res) {
 
 app.get('/api/notes', function (req, res) {
     try {
-        noteBody = fs.readFileSync('./db/db.json', 'utf8');
+        noteBody = fs.readFileSync('/db/db.json', 'utf8');
         noteBody = JSON.parse(noteBody);
         noteBody = JSON.stringify(noteBody);
 
