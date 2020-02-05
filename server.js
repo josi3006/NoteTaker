@@ -2,23 +2,18 @@ const fs = require('fs');
 const util = require("util");
 const express = require('express');
 const path = require('path');
-
+const noteData = require("./db/db.json")
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const writeFileAsync = util.promisify(fs.writeFile);
-const readFileAsync = util.promisify(fs.readFile);
+// const writeFileAsync = util.promisify(fs.writeFile);
+// const readFileAsync = util.promisify(fs.readFile);
 
-let id = 1;
-
-let noteBody = [];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
-
 
 
 
@@ -40,16 +35,9 @@ app.get('/notes', function (req, res) {
 
 // This code defaults to the "index" page
 
-app.get('*', function (req, res) {
+app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, './public/index.html'));
 });
-
-
-// This code adds the db to the path
-
-// app.get('/api/notes', function (req, res) {
-//     return res.sendFile(path.join(__dirname, "/db/db.json"));
-// });
 
 
 
@@ -57,18 +45,12 @@ app.get('*', function (req, res) {
 // This code gets notes from the db
 
 app.get('/api/notes', function (req, res) {
-    readFileAsync('./db/db.json', 'utf8')
-        .then(function (data) {
-            data = JSON.parse(data);
-            return res.json(data);
-        });
 
-    console.log('This is not working:--------------------');
-    console.log(noteBody);
+    console.log('Notes done been gotten');
+
+    return res.json(noteData);
+
 });
-
-
-
 
 
 
@@ -77,42 +59,18 @@ app.get('/api/notes', function (req, res) {
 
 app.post('/api/notes', function (req, res) {
 
-    let allNotes = req.body;
+    let newNote = req.body;
+    newNote['id'] = noteData.length;
+    noteData.push(newNote);
 
-    readFileAsync('./db/db.json', 'utf8')
-        .then(function (data) {
+    fs.writeFile('./db/db.json', JSON.stringify(noteData), function (err) {
+        if (err) throw (err);
 
-            data = JSON.parse(data);
-            data.push(allNotes);
+        console.log('Note done been writed');
 
-            req.body.id = allNotes.length + 1;
+    })
 
-            writeFileAsync('./db/db.json', JSON.stringify(data));
-
-        });
-    res.send('Done!');
 });
-
-
-
-
-
-
-
-// fs.writeFile('./db/db.json', noteBody, 'utf8', function (err) {      // Writes new note to db
-//     if (err) throw err;
-// });
-
-// noteBody = JSON.parse(noteBody);
-// res.json(noteBody);
-
-// console.log('This one is working:--------------------');
-// console.log(noteBody);
-
-// } catch (err) {
-//     throw err;
-// }
-// });
 
 
 
@@ -122,38 +80,15 @@ app.post('/api/notes', function (req, res) {
 app.delete('/api/notes/:id', function (req, res) {
     let delNote = req.params.id;
 
-        readFileAsync('./db/db.json', 'utf8')
-        .then(function(data) {
-            data = JSON.parse(data);
+    noteData.splice(delNote, 1);
 
-            data.splce(delNote, 1);
+    fs.writeFile('./db/db.json', JSON.stringify(noteData), function (err) {
+        if (err) throw err;
+        console.log('Note ' + delNote + ' is ded.');
 
-            for (var i = 0; i < data.length; i++) {
-                data[i].id = i;
-            }
+    })
+});
 
-            writeFileAsync('./db/db.json', JSON.stringify(data));
-
-        });
-        res.send('Note was deleted!');
-
-    });
-
-//         noteBody = JSON.parse(noteBody);
-//         noteBody = noteBody.filter(function (note) {
-//             return note.id != req.params.id;
-//         });
-//         noteBody = JSON.stringify(noteBody);
-//         fs.writeFile('./db/db.json', noteBody, 'utf8', function (err) {
-//             if (err) throw err;
-//         });
-
-//         res.send(JSON.parse(noteBody));
-
-//     } catch (err) {
-//         throw err;
-//     }
-// });
 
 
 
