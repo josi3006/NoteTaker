@@ -8,4 +8,4 @@ https://drive.google.com/file/d/1kOJoexPNhZw57vt60tQTVXSsWoYV5vKm/view
 
 Here is a screen shot of the app:
 
-
+![Note Taker screen shot](NoteTakerScreen.png)
