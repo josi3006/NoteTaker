@@ -68,6 +68,8 @@ app.post('/api/notes', function (req, res) {
 
         console.log('Note done been writed');
 
+        res.end();
+
     })
 
 });
@@ -85,6 +87,8 @@ app.delete('/api/notes/:id', function (req, res) {
     fs.writeFile('./db/db.json', JSON.stringify(noteData), function (err) {
         if (err) throw err;
         console.log('Note ' + delNote + ' is ded.');
+
+        res.end();
 
     })
 });
